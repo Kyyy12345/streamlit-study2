@@ -5,5 +5,6 @@ with st.form("filter_form"):
     min_roi       = st.slider("최소 ROI", 0.0, 10.0, 0.0)
     submitted     = st.form_submit_button("검색 적용")
 
+# Form 밖에서만 실행
 if submitted:
     st.write(f"{campaign_type} / ROI >= {min_roi}")
