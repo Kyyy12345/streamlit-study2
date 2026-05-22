@@ -1,4 +1,5 @@
 import streamlit as st
 
-name = st.session_state.get('user_name', '방문자')
-st.subheader(f"{name}님의 대시보드")
+st.write('대시보드')
+
+st.header(f"{st.session_state.get('user_name')}님의 대시보드")

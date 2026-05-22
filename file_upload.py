@@ -1,9 +1,9 @@
 import streamlit as st
-import pandas as pd
+from PIL import Image
 
-upload = st.file_uploader("CSV 파일 입력하세요: ", ["csv"])
+upload = st.file_uploader("이미지 파일을 올려주세요 (jpg, png):", type=["jpg", "jpeg", "png"])
 
 if upload is not None:
-    df = pd.read_csv(upload)
-    st.dataframe(df.head())        
+    img = Image.open(upload)
+    st.image(img, caption=upload.name, use_column_width=True)
 
