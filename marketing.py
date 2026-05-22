@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import numpy as np
 
 # 페이지 설정
 st.set_page_config(layout="wide", page_title="마케팅 투자 대시보드")
@@ -20,10 +21,25 @@ marketing = load_data()
 
 # 사이드바 필터
 st.sidebar.title('🔎 필터')
-start_date, end_date = st.sidebar.date_input(
+selected_dates = st.sidebar.date_input(
     '기간',
-    [marketing['Date'].min().date(), marketing['Date'].max().date()]
+    (marketing['Date'].min().date(), marketing['Date'].max().date())
 )
+
+if isinstance(selected_dates, (list, tuple)):
+    if len(selected_dates) == 2:
+        start_date, end_date = selected_dates
+    elif len(selected_dates) == 1:
+        start_date = end_date = selected_dates[0]
+    else:
+        start_date = marketing['Date'].min().date()
+        end_date = marketing['Date'].max().date()
+else:
+    start_date = end_date = selected_dates
+
+if start_date > end_date:
+    start_date, end_date = end_date, start_date
+
 selected_channels = st.sidebar.multiselect(
     '채널',
     options=sorted(marketing['Channel_Used'].unique()),
@@ -159,19 +175,6 @@ fig_campaign = px.bar(campaign_type_analysis.reset_index(), x='Campaign_Type', y
 st.plotly_chart(fig_campaign, use_container_width=True)
 
 st.dataframe(campaign_type_analysis, use_container_width=True)
-
-st.markdown("---")
-
-# ============ 5. Cost vs 성과 관계 ============
-st.subheader('💰 Cost vs ROI 분석 (비용 대비 효율)')
-sample_size = min(len(filtered), 5000)
-fig_scatter = px.scatter(filtered.sample(sample_size), x='Acquisition_Cost', y='ROI',
-                         color='Conversion_Rate', size='Clicks',
-                         title='고객획득비용 vs ROI (색상: 전환율, 크기: 클릭수)',
-                         hover_data=['Company', 'Channel_Used'])
-st.plotly_chart(fig_scatter, use_container_width=True)
-
-st.markdown("💡 **인사이트**: 좌상단(저비용-고ROI) 캠페인에 투자 집중")
 
 st.markdown("---")
 
